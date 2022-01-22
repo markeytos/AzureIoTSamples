@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32113.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulateIoTHubDevice", "SimulateIoTHubDevice.csproj", "{903864BB-BCE1-47D6-98A2-87F645DBD8DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulateIoTHubDevice", "SimulateIoTHubDevice.csproj", "{903864BB-BCE1-47D6-98A2-87F645DBD8DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EZCASharedLibrary", "..\EZCASharedLibrary\EZCASharedLibrary.csproj", "{B48C4A43-37FC-47E0-ABE4-090DD97E200A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulateDeviceProvisioning", "..\SimulateDeviceProvisioning\SimulateDeviceProvisioning.csproj", "{7D617D05-4094-4C60-9010-4F05F901CF89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{903864BB-BCE1-47D6-98A2-87F645DBD8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{903864BB-BCE1-47D6-98A2-87F645DBD8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{903864BB-BCE1-47D6-98A2-87F645DBD8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B48C4A43-37FC-47E0-ABE4-090DD97E200A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B48C4A43-37FC-47E0-ABE4-090DD97E200A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B48C4A43-37FC-47E0-ABE4-090DD97E200A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B48C4A43-37FC-47E0-ABE4-090DD97E200A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D617D05-4094-4C60-9010-4F05F901CF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D617D05-4094-4C60-9010-4F05F901CF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D617D05-4094-4C60-9010-4F05F901CF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D617D05-4094-4C60-9010-4F05F901CF89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

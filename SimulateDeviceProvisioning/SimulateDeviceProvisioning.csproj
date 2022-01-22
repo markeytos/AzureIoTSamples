@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.39.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Provisioning.Client" Version="1.19.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Provisioning.Transport.Mqtt" Version="1.17.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,40 +1,43 @@
-﻿using Microsoft.Azure.Devices.Client;
-using EZCASharedLibrary.Managers;
+﻿using EZCASharedLibrary.Managers;
 using EZCASharedLibrary.Models;
 using EZCASharedLibrary.Services;
+using Microsoft.Azure.Devices.Provisioning.Client;
+using Microsoft.Azure.Devices.Provisioning.Client.Transport;
+using Microsoft.Azure.Devices.Shared;
+using Microsoft.Azure.Devices.Client;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-//Variables Change this to match your IoT Hub
-string _iotHubEndpoint = "igalhub.azure-devices.net";
+// variables, change this to match your Device Provisioning Service 
+string _globalEndpoint = "global.azure-devices-provisioning.net";
+string _dpsIDScope = "0ne004A669C";
 
+// In here we will simulate the certificate creation in the same device.
+// In production, the CSR should be created in the device and then submitted by another service, read our documentation to learn best practices for certificate provisioning.
 
-HttpService httpService = new (new HttpClient());
+//Initialize EZCA Services 
+HttpService httpService = new(new HttpClient());
 EZCAManager ezMananger = new(httpService);
 
 // Get Available CAs 
 Console.WriteLine("Getting Available CAs..");
 AvailableCAModel[]? availableCAs = await ezMananger.GetAvailableCAsAsync();
-if(availableCAs == null || availableCAs.Any() == false)
+if (availableCAs == null || availableCAs.Any() == false)
 {
     Console.WriteLine("Could not find any available CAs in EZCA");
     return;
 }
 AvailableCAModel selectedCA = InputService.SelectCA(availableCAs);
 
-
 // Register New Domain
 //Generate Random Guid to simulate new Device ID
 Console.WriteLine("Registering Device in EZCA..");
 string deviceID = Guid.NewGuid().ToString();
-Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
-Console.WriteLine("Press Enter to continue..");
-Console.ReadLine();
 bool success = await ezMananger.RegisterDomainAsync(selectedCA, deviceID);
 if (!success)
 {
-   Console.WriteLine("Could not register new device in EZCA");
-   return;
+    Console.WriteLine("Could not register new device in EZCA");
+    return;
 }
 
 // get cert from EZCA 
@@ -47,11 +50,30 @@ if (deviceCertificate == null)
 }
 
 
-// Send device information to Azure
-Console.WriteLine("Authenticating In Azure..");
-// Create an authentication object using your X.509 certificate. 
+//register in Azure Device Provisioning
+SecurityProviderX509Certificate security = new(deviceCertificate);
+ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(
+                _globalEndpoint,
+                _dpsIDScope,
+                security,
+                new ProvisioningTransportHandlerMqtt());
+
+Console.WriteLine($"Initialized for registration Id {security.GetRegistrationID()}.");
+
+Console.WriteLine("Registering with the device provisioning service... ");
+DeviceRegistrationResult result = await provClient.RegisterAsync();
+
+Console.WriteLine($"Registration status: {result.Status}.");
+if (result.Status != ProvisioningRegistrationStatusType.Assigned)
+{
+    Console.WriteLine($"Registration status did not assign a hub, so exiting this sample.");
+    return;
+}
+
+Console.WriteLine($"Device {result.DeviceId} registered to {result.AssignedHub}.");
+
 DeviceAuthenticationWithX509Certificate auth = new (deviceID, deviceCertificate);
-var deviceClient = DeviceClient.Create(_iotHubEndpoint, auth, TransportType.Mqtt);
+var deviceClient = DeviceClient.Create(result.AssignedHub, auth, TransportType.Mqtt);
 
 if (deviceClient == null)
 {
@@ -63,7 +85,6 @@ else
     await SendEventAsync(deviceClient, deviceID);
 }
 return;
-
 
 static async Task SendEventAsync(DeviceClient deviceClient, string deviceId)
 {

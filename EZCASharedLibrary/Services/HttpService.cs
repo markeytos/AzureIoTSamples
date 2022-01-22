@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 
-namespace SimulateIoTHubDevice.Services;
+namespace EZCASharedLibrary.Services;
 
 public interface IHttpService
 {

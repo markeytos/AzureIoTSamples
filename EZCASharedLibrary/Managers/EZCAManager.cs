@@ -1,4 +1,4 @@
-﻿using SimulateIoTHubDevice.Services;
+﻿using EZCASharedLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
-using SimulateIoTHubDevice.Models;
+using EZCASharedLibrary.Models;
 using System.Text.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
-namespace SimulateIoTHubDevice.Managers;
+namespace EZCASharedLibrary.Managers;
 
 public class EZCAManager
 {
