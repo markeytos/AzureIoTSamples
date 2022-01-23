@@ -6,15 +6,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 //Variables Change this to match your IoT Hub
-string _iotHubEndpoint = "igalhub.azure-devices.net";
+string _iotHubEndpoint = "ezcaiothubtest.azure-devices.net";
 
 
 HttpService httpService = new (new HttpClient());
-EZCAManager ezMananger = new(httpService);
+EZCAManager ezManager = new(httpService);
 
 // Get Available CAs 
 Console.WriteLine("Getting Available CAs..");
-AvailableCAModel[]? availableCAs = await ezMananger.GetAvailableCAsAsync();
+AvailableCAModel[]? availableCAs = await ezManager.GetAvailableCAsAsync();
 if(availableCAs == null || availableCAs.Any() == false)
 {
     Console.WriteLine("Could not find any available CAs in EZCA");
@@ -30,7 +30,7 @@ string deviceID = Guid.NewGuid().ToString();
 Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
 Console.WriteLine("Press Enter to continue..");
 Console.ReadLine();
-bool success = await ezMananger.RegisterDomainAsync(selectedCA, deviceID);
+bool success = await ezManager.RegisterDomainAsync(selectedCA, deviceID);
 if (!success)
 {
    Console.WriteLine("Could not register new device in EZCA");
@@ -39,7 +39,7 @@ if (!success)
 
 // get cert from EZCA 
 Console.WriteLine("Getting Device Certificate..");
-X509Certificate2? deviceCertificate = await ezMananger.RequestCertificateAsync(selectedCA, deviceID);
+X509Certificate2? deviceCertificate = await ezManager.RequestCertificateAsync(selectedCA, deviceID);
 if (deviceCertificate == null)
 {
     Console.WriteLine("Could not create device certificate");
