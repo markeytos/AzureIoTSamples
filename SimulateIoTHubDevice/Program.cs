@@ -4,6 +4,10 @@ using EZCASharedLibrary.Models;
 using EZCASharedLibrary.Services;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Azure.Identity;
+using Microsoft.Azure.Devices;
+using Message = Microsoft.Azure.Devices.Client.Message;
+using TransportType = Microsoft.Azure.Devices.Client.TransportType;
 
 //Variables Change this to match your IoT Hub
 string _iotHubEndpoint = "ezcaiothubtest.azure-devices.net";
@@ -12,24 +16,36 @@ string _iotHubEndpoint = "ezcaiothubtest.azure-devices.net";
 HttpService httpService = new (new HttpClient());
 EZCAManager ezManager = new(httpService);
 
+
+//register Device in Azure IoT Hub
+string deviceID = Guid.NewGuid().ToString();
+var registryManager = RegistryManager.Create(_iotHubEndpoint, 
+    new DefaultAzureCredential());
+var device = new Microsoft.Azure.Devices.Device(deviceID)
+{
+    Authentication = new AuthenticationMechanism()
+    {
+        Type = AuthenticationType.CertificateAuthority
+    }
+};
+var deviceWithKeys = await registryManager.AddDeviceAsync(device);
+
 // Get Available CAs 
 Console.WriteLine("Getting Available CAs..");
 AvailableCAModel[]? availableCAs = await ezManager.GetAvailableCAsAsync();
-if(availableCAs == null || availableCAs.Any() == false)
+if (availableCAs == null || availableCAs.Any() == false)
 {
     Console.WriteLine("Could not find any available CAs in EZCA");
     return;
 }
 AvailableCAModel selectedCA = InputService.SelectCA(availableCAs);
 
-
 // Register New Domain
 //Generate Random Guid to simulate new Device ID
 Console.WriteLine("Registering Device in EZCA..");
-string deviceID = Guid.NewGuid().ToString();
-Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
-Console.WriteLine("Press Enter to continue..");
-Console.ReadLine();
+//Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
+//Console.WriteLine("Press Enter to continue..");
+//Console.ReadLine();
 bool success = await ezManager.RegisterDomainAsync(selectedCA, deviceID);
 if (!success)
 {
