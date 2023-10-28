@@ -26,7 +26,7 @@ namespace EZCASharedLibrary.Models
         public List<string> SubjectAltNames { get; set; } = new List<string>();
         [JsonPropertyName("CAID")]
         public string? CAID { get; set; } 
-        [JsonPropertyName("TenantID")]
+        [JsonPropertyName("TemplateID")]
         public string? TemplateID { get; set; }
         [JsonPropertyName("CSR")]
         public string CSR { get; set; } = string.Empty;
