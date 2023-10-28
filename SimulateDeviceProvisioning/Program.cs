@@ -51,7 +51,14 @@ if (deviceCertificate == null)
 
 
 //register in Azure Device Provisioning
-SecurityProviderX509Certificate security = new(deviceCertificate);
+X509Chain x509Chain = new();
+x509Chain.Build(deviceCertificate);
+X509Certificate2Collection caCollection = new X509Certificate2Collection();
+for (int i = 1; i < x509Chain.ChainElements.Count; i++)
+{
+    caCollection.Add(x509Chain.ChainElements[i].Certificate);
+}
+SecurityProviderX509Certificate security = new(deviceCertificate, caCollection);
 ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(
                 _globalEndpoint,
                 _dpsIDScope,

@@ -36,7 +36,6 @@ if (!success)
    Console.WriteLine("Could not register new device in EZCA");
    return;
 }
-
 // get cert from EZCA 
 Console.WriteLine("Getting Device Certificate..");
 X509Certificate2? deviceCertificate = await ezManager.RequestCertificateAsync(selectedCA, deviceID);
@@ -50,8 +49,15 @@ if (deviceCertificate == null)
 // Send device information to Azure
 Console.WriteLine("Authenticating In Azure..");
 // Create an authentication object using your X.509 certificate. 
-DeviceAuthenticationWithX509Certificate auth = new (deviceID, deviceCertificate);
-var deviceClient = DeviceClient.Create(_iotHubEndpoint, auth, TransportType.Mqtt);
+X509Chain x509Chain = new();
+x509Chain.Build(deviceCertificate);
+X509Certificate2Collection caCollection = new X509Certificate2Collection();
+for (int i = 1; i < x509Chain.ChainElements.Count; i++)
+{
+    caCollection.Add(x509Chain.ChainElements[i].Certificate);
+}
+DeviceAuthenticationWithX509Certificate auth = new (deviceID, deviceCertificate, caCollection);
+var deviceClient = DeviceClient.Create(_iotHubEndpoint, auth, TransportType.Mqtt_Tcp_Only);
 
 if (deviceClient == null)
 {
