@@ -1,9 +1,7 @@
 ﻿using EZCASharedLibrary.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
 using EZCASharedLibrary.Models;
@@ -20,11 +18,11 @@ public class EZCAManager
     private readonly IHttpService _httpService;
     private AccessToken? _token;
     private readonly string _portalURL;
-    public EZCAManager(IHttpService httpService)
+    public EZCAManager(IHttpService httpService, string url = "https://portal.ezca.io/")
     {
         _httpService = httpService;
         _token = null;
-        _portalURL = "https://portal.ezca.io/";
+        _portalURL = url;
     }
 
 
@@ -37,7 +35,7 @@ public class EZCAManager
             //For production you should remove interactive since there is no human involved
             DefaultAzureCredential credential = new(includeInteractiveCredentials: true);
             TokenRequestContext authContext = new(
-                new string[] { "https://management.core.windows.net/.default" });
+                new[] { "https://management.core.windows.net/.default" });
             _token = await credential.GetTokenAsync(authContext);
         }
         return _token.Value.Token;
@@ -68,7 +66,8 @@ public class EZCAManager
         return availableCAs;
     }
 
-    public async Task<X509Certificate2?> RequestCertificateAsync(AvailableCAModel ca, string domain)
+    public async Task<X509Certificate2?> RequestCertificateAsync(AvailableCAModel ca, 
+        string domain, int certificateValidityDays = 10)
     {
         if(ca == null)
         {
@@ -91,7 +90,6 @@ public class EZCAManager
         {
             domain
         };
-        int certificateValidityDays = 10; // setting the lifetime of the certificate to 10 days
         CertificateCreateRequestModel request = new(ca, "CN=" + domain,
             subjectAlternateNames, csr, certificateValidityDays);
         try

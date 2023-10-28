@@ -10,18 +10,18 @@ using System.Text;
 
 // variables, change this to match your Device Provisioning Service 
 string _globalEndpoint = "global.azure-devices-provisioning.net";
-string _dpsIDScope = "0ne004A669C";
+string _dpsIDScope = "0ne004A9EDB";
 
 // In here we will simulate the certificate creation in the same device.
 // In production, the CSR should be created in the device and then submitted by another service, read our documentation to learn best practices for certificate provisioning.
 
 //Initialize EZCA Services 
 HttpService httpService = new(new HttpClient());
-EZCAManager ezMananger = new(httpService);
+EZCAManager ezcaManager = new(httpService);
 
 // Get Available CAs 
 Console.WriteLine("Getting Available CAs..");
-AvailableCAModel[]? availableCAs = await ezMananger.GetAvailableCAsAsync();
+AvailableCAModel[]? availableCAs = await ezcaManager.GetAvailableCAsAsync();
 if (availableCAs == null || availableCAs.Any() == false)
 {
     Console.WriteLine("Could not find any available CAs in EZCA");
@@ -33,7 +33,7 @@ AvailableCAModel selectedCA = InputService.SelectCA(availableCAs);
 //Generate Random Guid to simulate new Device ID
 Console.WriteLine("Registering Device in EZCA..");
 string deviceID = Guid.NewGuid().ToString();
-bool success = await ezMananger.RegisterDomainAsync(selectedCA, deviceID);
+bool success = await ezcaManager.RegisterDomainAsync(selectedCA, deviceID);
 if (!success)
 {
     Console.WriteLine("Could not register new device in EZCA");
@@ -42,7 +42,7 @@ if (!success)
 
 // get cert from EZCA 
 Console.WriteLine("Getting Device Certificate..");
-X509Certificate2? deviceCertificate = await ezMananger.RequestCertificateAsync(selectedCA, deviceID);
+X509Certificate2? deviceCertificate = await ezcaManager.RequestCertificateAsync(selectedCA, deviceID);
 if (deviceCertificate == null)
 {
     Console.WriteLine("Could not create device certificate");

@@ -48,18 +48,10 @@ public class HttpService : IHttpService
     {
         if (string.IsNullOrWhiteSpace(url))
         {
-            throw new ArgumentNullException("URL is empty or null ", nameof(url));
+            throw new ArgumentNullException(nameof(url), "URL is empty or null ");
         }
-        HttpResponseMessage responseMessage;
-        HttpRequestMessage requestMessage = new(HttpMethod.Post, url);
-        if (!string.IsNullOrWhiteSpace(token))
-        {
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-        requestMessage.Content = new StringContent(jsonPayload,
-                Encoding.UTF8, "application/json");
-        responseMessage = await _retryPolicy.ExecuteAsync(async () =>
-                  await SendMessageAsync(requestMessage));
+        HttpResponseMessage responseMessage = await _retryPolicy.ExecuteAsync(async () =>
+                  await SendMessageAsync(url, HttpMethod.Post, token, jsonPayload));
         return responseMessage;
     }
 
@@ -67,24 +59,29 @@ public class HttpService : IHttpService
     {
         if (string.IsNullOrWhiteSpace(url))
         {
-            throw new ArgumentNullException("URL is empty or null", nameof(url));
+            throw new ArgumentNullException(nameof(url), "URL is empty or null");
         }
-        HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
-        if (!string.IsNullOrWhiteSpace(token))
-        {
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-        HttpResponseMessage response;
-        response = await _retryPolicy.ExecuteAsync(async () =>
-                 await SendMessageAsync(requestMessage));
+        HttpResponseMessage response = await _retryPolicy.ExecuteAsync(async () =>
+                 await SendMessageAsync(url, HttpMethod.Get, token));
         return response;
     }
 
 
-    private async Task<HttpResponseMessage> SendMessageAsync(HttpRequestMessage requestMessage)
+    private async Task<HttpResponseMessage> SendMessageAsync(string url, HttpMethod method,
+        string token = "", string jsonPayload = "")
     {
-        HttpResponseMessage response;
-        response = await _httpClient.SendAsync(requestMessage);
+        HttpRequestMessage requestMessage = new(method, url);
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            requestMessage.Headers.Authorization = new 
+                AuthenticationHeaderValue("Bearer", token);
+        }
+        if(!string.IsNullOrWhiteSpace(jsonPayload))
+        {
+            requestMessage.Content = new StringContent(jsonPayload,
+                Encoding.UTF8, "application/json");
+        }
+        HttpResponseMessage response = await _httpClient.SendAsync(requestMessage);
         return response;
     }
 }
