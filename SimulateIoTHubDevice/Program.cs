@@ -18,6 +18,7 @@ EZCAManager ezManager = new(httpService);
 
 
 //register Device in Azure IoT Hub
+//Generate Random Guid to simulate new Device ID
 string deviceID = Guid.NewGuid().ToString();
 var registryManager = RegistryManager.Create(_iotHubEndpoint, 
     new DefaultAzureCredential());
@@ -29,6 +30,10 @@ var device = new Microsoft.Azure.Devices.Device(deviceID)
     }
 };
 var deviceWithKeys = await registryManager.AddDeviceAsync(device);
+//Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
+//Console.WriteLine("Press Enter to continue..");
+//Console.ReadLine();
+
 
 // Get Available CAs 
 Console.WriteLine("Getting Available CAs..");
@@ -41,11 +46,7 @@ if (availableCAs == null || availableCAs.Any() == false)
 AvailableCAModel selectedCA = InputService.SelectCA(availableCAs);
 
 // Register New Domain
-//Generate Random Guid to simulate new Device ID
 Console.WriteLine("Registering Device in EZCA..");
-//Console.WriteLine($"Please register your device in Azure. Device ID: {deviceID}");
-//Console.WriteLine("Press Enter to continue..");
-//Console.ReadLine();
 bool success = await ezManager.RegisterDomainAsync(selectedCA, deviceID);
 if (!success)
 {
