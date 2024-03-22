@@ -14,6 +14,8 @@ string _iotHubEndpoint = "ezcaiothubtest.azure-devices.net";
 
 
 HttpService httpService = new (new HttpClient());
+//If you are using a different URL for EZCA (For example our EU,Australia versions, or a private cloud offering), change it here for example:
+//EZCAManager ezManager = new(httpService, "https://eu.ezca.io/");
 EZCAManager ezManager = new(httpService);
 
 

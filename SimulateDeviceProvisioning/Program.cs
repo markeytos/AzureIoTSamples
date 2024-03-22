@@ -17,6 +17,8 @@ string _dpsIDScope = "0ne004A9EDB";
 
 //Initialize EZCA Services 
 HttpService httpService = new(new HttpClient());
+//If you are using a different URL for EZCA (For example our EU,Australia versions, or a private cloud offering), change it here for example:
+//EZCAManager ezManager = new(httpService, "https://eu.ezca.io/");
 EZCAManager ezcaManager = new(httpService);
 
 // Get Available CAs 
